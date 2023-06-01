@@ -1,4 +1,4 @@
-use crate::common::{
+use crate::{common::{
     app_state::AppState,
     entities::{
         profiles::{
@@ -6,9 +6,8 @@ use crate::common::{
             repo::{ InsertProfileFn, QueryProfileFn, QueryProfileByUserFn },
         },
     },
-};
+}, routes::errors::error_utils::UserError};
 use actix_web::{ web, get, web::{ Path, Json }, Responder };
-use std::error::Error;
 use super::model::{
     ProfileQuery,
     ProfileByUserNameQuery,
@@ -20,7 +19,7 @@ use super::model::{
 pub async fn create_profile(
     app_data: web::Data<AppState>,
     form: ProfileCreateMultipart
-) -> Result<impl Responder, Box<dyn Error>> {
+) -> Result<impl Responder, UserError> {
     let result = app_data.db_repo.insert_profile(ProfileCreate {
         user_name: form.user_name.to_owned(),
         full_name: form.full_name.to_owned(),
@@ -38,7 +37,7 @@ pub async fn create_profile(
 
     match result {
         Ok(id) => Ok(Json(id)),
-        Err(e) => Err(Box::new(e)),
+        Err(e) => Err(e.into()),
     }
 }
 
@@ -46,12 +45,12 @@ pub async fn create_profile(
 pub async fn get_profile(
     app_data: web::Data<AppState>,
     path: Path<ProfileQuery>
-) -> Result<impl Responder, Box<dyn Error>> {
+) -> Result<impl Responder, UserError> {
     let result = app_data.db_repo.query_profile(path.id).await;
 
     match result {
         Ok(profile) => { Ok(Json(convert(profile))) }
-        Err(e) => Err(Box::new(e)),
+        Err(e) => Err(e.into()),
     }
 }
 
@@ -59,14 +58,14 @@ pub async fn get_profile(
 pub async fn get_profile_by_user(
     app_data: web::Data<AppState>,
     path: Path<ProfileByUserNameQuery>
-) -> Result<impl Responder, Box<dyn Error>> {
+) -> Result<impl Responder, UserError> {
     let result = app_data.db_repo.query_profile_by_user(
         path.user_name.to_owned()
     ).await;
 
     match result {
         Ok(profile) => Ok(Json(convert(profile))),
-        Err(e) => Err(Box::new(e)),
+        Err(e) => Err(e.into()),
     }
 }
 
