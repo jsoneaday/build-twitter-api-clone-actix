@@ -1,0 +1,9 @@
+useTabs = false
+tabWidth = 4
+printWidth = 100
+endOfLine = "lf"
+
+# -- Not supported yet --
+# trailingComma = "es5"
+# embeddedLanguageFormatting = "auto"
+

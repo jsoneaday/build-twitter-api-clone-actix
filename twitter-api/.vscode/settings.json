@@ -1,0 +1,8 @@
+{
+    "[rust]": {
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "jinxdash.prettier-rust"
+    },
+    "rust-analyzer.showUnlinkedFileNotification": false
+}
