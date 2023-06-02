@@ -312,12 +312,6 @@ mod tests {
 
             _ = db_repo.follow_user(current_profile_id, following_profile_id).await;
 
-            println!(
-                "insert_circle_member {} {} {}",
-                circle_group_id,
-                following_profile_id,
-                user_name
-            );
             _ = db_repo.insert_circle_member(circle_group_id, following_profile_id).await;
 
             let mut following_profile_message_ids: Vec<i64> = vec![];
@@ -432,9 +426,7 @@ mod tests {
             let rt = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
 
             rt.block_on(async {
-                println!("log: start profile setup_fixtures()");
                 setup_fixtures().await;
-                println!("log: end profile setup_fixtures()");
             });
 
             rt

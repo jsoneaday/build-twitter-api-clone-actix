@@ -495,7 +495,6 @@ mod tests {
                 let db_repo = DbRepo::init().await;
 
                 *fx = Some(setup_data(db_repo).await);
-                println!("log: setup_fixtures() completed");
             }
         }
     }
@@ -505,9 +504,7 @@ mod tests {
             let rt = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
 
             rt.block_on(async {
-                println!("log: start message setup_fixtures()");
                 setup_fixtures().await;
-                println!("log: end message setup_fixtures()");
             });
 
             rt
@@ -538,7 +535,6 @@ mod tests {
         use super::*;
 
         async fn test_insert_message_body() {
-            println!("log: start test_insert_message_body()");
             let fixtures = get_fixtures();
 
             let mock_insert_profile = get_insert_profile_mock();
@@ -564,7 +560,6 @@ mod tests {
                 .unwrap();
 
             assert!(original_msg_id > 0);
-            println!("log: end test_insert_message_body()");
         }
 
         #[test]
@@ -577,7 +572,6 @@ mod tests {
         use super::*;
 
         async fn test_query_message_body() {
-            println!("log: start test_query_message_body()");
             let fixtures = get_fixtures();
             let mock_insert_profile = get_insert_profile_mock();
             let mock_insert_message = get_insert_message_mock();
@@ -601,7 +595,6 @@ mod tests {
                 .unwrap();
 
             assert!(original_message.id == original_msg_id);
-            println!("log: end test_query_message_body()");
         }
 
         #[test]
@@ -614,7 +607,6 @@ mod tests {
         use super::*;
 
         async fn test_insert_response_message_body() {
-            println!("log: start test_insert_response_message_body()");
             let fixtures = get_fixtures();
             let mock_insert_profile = get_insert_profile_mock();
             let mock_insert_message = get_insert_message_mock();
@@ -644,7 +636,6 @@ mod tests {
                 original_msg_id.unwrap()
             ).await;
             assert!(response_msg.unwrap() > 0);
-            println!("log: end test_insert_response_message_body()");
         }
 
         #[test]
@@ -762,7 +753,6 @@ mod tests {
 
         #[tokio::test]
         async fn test_query_messages_by_following() {
-            println!("log: start test_query_messages_by_following()");
             setup_fixtures().await;
             let insert_profile_fixtures = get_local_fixtures().await;
             let insert_message_fixtures = get_local_fixtures().await;
@@ -862,8 +852,6 @@ mod tests {
                 assert!(created_following_messages.contains(following_msg_id));
             }
             assert!(following_msg_ids.len() == created_following_messages.len());
-
-            println!("log: end test_query_messages_by_following()");
         }
     }
 }

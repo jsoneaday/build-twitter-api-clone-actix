@@ -22,7 +22,6 @@ pub async fn test_route_create_and_get_message() {
 
     let header_value_string = format!("multipart/form-data; boundary={}", boundary);
     let header_value = HeaderValue::from_str(&header_value_string);
-    println!("start create profile");
     let update_avatar_req = test::TestRequest
         ::post()
         .append_header((header::CONTENT_TYPE, header_value.unwrap()))
@@ -30,10 +29,8 @@ pub async fn test_route_create_and_get_message() {
         .set_payload(payload)
         .to_request();
     let profile_id = test::call_and_read_body_json::<_, _, i64>(&app, update_avatar_req).await;
-    println!("end create profile");
 
     const MSG_BODY_STR: &str = "Testing 123";
-    println!("start create message");
     let create_msg_req = test::TestRequest
         ::post()
         .uri("/v1/msg")
@@ -47,15 +44,12 @@ pub async fn test_route_create_and_get_message() {
         )
         .to_request();
     let msg_id = test::call_and_read_body_json::<_, _, i64>(&app, create_msg_req).await;
-    println!("end create message {}", msg_id);
 
-    println!("start get message");
     let get_msg_req = test::TestRequest::get().uri(&format!("/v1/msg/{}", msg_id)).to_request();
     let get_msg_body = test::call_and_read_body_json::<_, _, Option<MessageResponder>>(
         &app,
         get_msg_req
     ).await;
-    println!("end get message");
 
     assert!(get_msg_body.unwrap().body.unwrap().eq(MSG_BODY_STR));
 }

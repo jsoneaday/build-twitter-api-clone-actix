@@ -32,6 +32,5 @@ async fn test_route_create_profile_with_avatar() {
         ::call_and_read_body_json::<_, _, Option<ProfileResponder>>(&app, get_profile_req).await
         .unwrap();
 
-    println!("get_profile_result: {:?}", get_profile_result);
     assert!(get_profile_result.id == user_id_result);
 }
