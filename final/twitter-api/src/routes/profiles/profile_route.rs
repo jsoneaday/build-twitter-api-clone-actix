@@ -16,7 +16,7 @@ use super::model::{
 };
 
 #[allow(unused)]
-pub async fn create_profile<T: InsertProfileFn + ?Sized>(
+pub async fn create_profile<T: InsertProfileFn>(
     app_data: web::Data<AppState<T>>,
     form: ProfileCreateMultipart
 ) -> Result<impl Responder, UserError> {
@@ -41,7 +41,7 @@ pub async fn create_profile<T: InsertProfileFn + ?Sized>(
     }
 }
 
-pub async fn get_profile<T: QueryProfileFn + ?Sized>(
+pub async fn get_profile<T: QueryProfileFn>(
     app_data: web::Data<AppState<T>>,
     path: Path<ProfileQuery>
 ) -> Result<impl Responder, UserError> {
@@ -53,7 +53,7 @@ pub async fn get_profile<T: QueryProfileFn + ?Sized>(
     }
 }
 
-pub async fn get_profile_by_user<T: QueryProfileByUserFn + ?Sized>(
+pub async fn get_profile_by_user<T: QueryProfileByUserFn>(
     app_data: web::Data<AppState<T>>,
     path: Path<ProfileByUserNameQuery>
 ) -> Result<impl Responder, UserError> {

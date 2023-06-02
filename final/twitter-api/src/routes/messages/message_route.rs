@@ -2,13 +2,13 @@ use crate::common::entities::messages::model::{MessageWithFollowingAndBroadcastQ
 use crate::common::app_state::AppState;
 use crate::common::entities::messages::repo::{InsertMessageFn, QueryMessageFn, QueryMessagesFn};
 use crate::routes::profiles::model::ProfileShort;
-use actix_web::{web, web::{Query, Json}, Responder};
+use actix_web::{web, web::{Path, Json}, Responder};
 use std::error::Error;
 use super::model::{MessageResponder, MessagePostJson, MessageQuery, MessageByFollowingQuery};
 
 
 #[allow(unused)]
-pub async fn create_message<T: InsertMessageFn + ?Sized>(app_data: web::Data<AppState<T>>, params: Json<MessagePostJson>) -> Result<impl Responder, Box<dyn Error>> {  
+pub async fn create_message<T: InsertMessageFn>(app_data: web::Data<AppState<T>>, params: Json<MessagePostJson>) -> Result<impl Responder, Box<dyn Error>> {  
     let max = 141; 
     let body = if params.body.len() < max {
         &params.body[..]
@@ -24,47 +24,47 @@ pub async fn create_message<T: InsertMessageFn + ?Sized>(app_data: web::Data<App
     }
 }
 
-// #[allow(unused)]
-// pub async fn get_message(app_data: web::Data<AppState>, query: Query<MessageQuery>) -> Result<Option<impl Responder>, Box<dyn Error>> {
-//     let message_result = app_data.db_repo.query_message(query.id).await;
+#[allow(unused)]
+pub async fn get_message<T: QueryMessageFn>(app_data: web::Data<AppState<T>>, path: Path<MessageQuery>) -> Result<Option<impl Responder>, Box<dyn Error>> {
+    let message_result = app_data.db_repo.query_message(path.id).await;
 
-//     match message_result {
-//         Ok(message) => {
-//             match message {
-//                 Some(msg) => {
-//                     Ok(Some(Json(convert(&msg))))
-//                 },
-//                 None => Ok(None)
-//             }
-//         },
-//         Err(e) => Err(Box::new(e))
-//     }
-// }
+    match message_result {
+        Ok(message) => {
+            match message {
+                Some(msg) => {
+                    Ok(Some(Json(convert(&msg))))
+                },
+                None => Ok(None)
+            }
+        },
+        Err(e) => Err(Box::new(e))
+    }
+}
 
-// #[allow(unused)]
-// pub async fn get_messages(app_data: web::Data<AppState>, query: Query<MessageByFollowingQuery>) -> Result<impl Responder, Box<dyn Error>>  {
-//     let page_size = match query.page_size {
-//         Some(ps) => ps,
-//         None => 10
-//     };
-//     let mut messages_result = app_data.db_repo.query_messages(
-//         query.follower_id, query.last_updated_at, page_size
-//     ).await;
+#[allow(unused)]
+pub async fn get_messages<T: QueryMessagesFn>(app_data: web::Data<AppState<T>>, path: Path<MessageByFollowingQuery>) -> Result<impl Responder, Box<dyn Error>>  {
+    let page_size = match path.page_size {
+        Some(ps) => ps,
+        None => 10
+    };
+    let mut messages_result = app_data.db_repo.query_messages(
+        path.follower_id, path.last_updated_at, page_size
+    ).await;
     
-//     let mut msg_collection: Vec<MessageResponder> = vec![];
-//     match messages_result {
-//         Ok(messages) => {
-//             messages
-//                 .iter()
-//                 .for_each(|msg| {
-//                     msg_collection.push(convert(msg))
-//                 });
+    let mut msg_collection: Vec<MessageResponder> = vec![];
+    match messages_result {
+        Ok(messages) => {
+            messages
+                .iter()
+                .for_each(|msg| {
+                    msg_collection.push(convert(msg))
+                });
 
-//             Ok(Json(msg_collection))
-//         },
-//         Err(e) => Err(Box::new(e))
-//     }
-// }
+            Ok(Json(msg_collection))
+        },
+        Err(e) => Err(Box::new(e))
+    }
+}
 
 fn convert(message: &MessageWithFollowingAndBroadcastQueryResult) -> MessageResponder {
     MessageResponder {

@@ -3,11 +3,16 @@ use sqlx::{FromRow, Postgres, Pool};
 use std::env;
 use dotenv::dotenv;
 use sqlx::migrate;
+use std::any::Any;
 
 #[allow(unused)]
 #[derive(FromRow, Deserialize)]
 pub struct EntityId {
     pub id: i64
+}
+
+pub trait DbRepository: Send {
+    fn construct(&self) -> &dyn Any;
 }
 
 pub trait DbConnGetter {
@@ -31,6 +36,12 @@ impl DbConnGetter for DbRepo {
 
     fn get_conn(&self) -> &Self::Output {
         &self.conn    
+    }
+}
+
+impl DbRepository for DbRepo {
+    fn construct(&self) -> &dyn Any {
+        self
     }
 }
 

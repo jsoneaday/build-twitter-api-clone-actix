@@ -47,10 +47,10 @@ pub async fn test_route_create_and_get_message() {
         )
         .to_request();
     let msg_id = test::call_and_read_body_json::<_, _, i64>(&app, create_msg_req).await;
-    println!("end create message");
+    println!("end create message {}", msg_id);
 
     println!("start get message");
-    let get_msg_req = test::TestRequest::get().uri(&format!("/v1/msg?id={}", msg_id)).to_request();
+    let get_msg_req = test::TestRequest::get().uri(&format!("/v1/msg/{}", msg_id)).to_request();
     let get_msg_body = test::call_and_read_body_json::<_, _, Option<MessageResponder>>(
         &app,
         get_msg_req

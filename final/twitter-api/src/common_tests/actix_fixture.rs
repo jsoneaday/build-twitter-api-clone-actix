@@ -1,8 +1,7 @@
 use crate::{
     common::{ app_state::AppState, fs::file_utils::get_avatar_buffer, entities::{base::DbRepo}},
     routes::{
-        //messages::message_route::{ get_message, create_message, get_messages },
-        profiles::{ profile_route::{ create_profile, get_profile, get_profile_by_user } }, messages::message_route::create_message,
+        profiles::{ profile_route::{ create_profile, get_profile, get_profile_by_user } }, messages::message_route::{create_message, get_message, get_messages},
     },
 };
 use chrono::{ DateTime, Utc };
@@ -64,23 +63,15 @@ pub async fn get_app_data<T>(db_repo: T) -> web::Data<AppState<T>> {
 
 #[allow(unused)]
 pub async fn get_app() -> impl Service<Request, Response = ServiceResponse, Error = Error> {
-    // std::env::set_var("RUST_LOG", "debug");
-    // env_logger::init();
-
     let app_data = get_app_data(DbRepo::init().await).await;
     test::init_service(
         App::new()
             .app_data(app_data.clone())            
             .service(
-                web
-                    ::scope("/v1")
-                    .service(
-                        web
-                            ::resource("/msg")
-                            // .route(web::get().to(get_message))
-                            .route(web::post().to(create_message::<DbRepo>))
-                    )
-                    //.service(web::resource("/msgs").route(web::get().to(get_messages)))
+                web::scope("/v1")
+                    .service(web::resource("/msg/{id}").route(web::get().to(get_message::<DbRepo>)))
+                    .service(web::resource("/msg").route(web::post().to(create_message::<DbRepo>)))
+                    .service(web::resource("/msgs").route(web::get().to(get_messages::<DbRepo>)))
                     .service(web::resource("/profile/{id}").route(web::get().to(get_profile::<DbRepo>)))
                     .service(web::resource("/profile/username/{user_name}").route(web::get().to(get_profile_by_user::<DbRepo>)))
                     .service(web::resource("/profile").route(web::post().to(create_profile::<DbRepo>)))

@@ -37,9 +37,10 @@ pub mod routes {
 }
 
 use std::env;
-use common::entities::{base::DbRepo, messages::repo::InsertMessageFn};
+use common::entities::{base::DbRepo};
 use dotenv::dotenv;
 use actix_web::{ web, App, HttpServer, Responder };
+use routes::messages::message_route::{get_message, get_messages};
 use routes::profiles::profile_route::{ create_profile, get_profile, get_profile_by_user };
 use std::error::Error;
 use crate::common::app_state::AppState;
@@ -65,15 +66,10 @@ pub async fn run() -> std::io::Result<()> {
             .app_data(app_data.clone())
             .route("/", web::get().to(get_root))
             .service(
-                web
-                    ::scope("/v1")
-                    .service(
-                        web
-                            ::resource("/msg")
-                            // .route(web::get().to(get_message))
-                            .route(web::post().to(create_message::<dyn InsertMessageFn>))
-                    )
-                    //.service(web::resource("/msgs").route(web::get().to(get_messages)))
+                web::scope("/v1")
+                    .service(web::resource("/msg/{id}").route(web::get().to(get_message::<DbRepo>)))
+                    .service(web::resource("/msg").route(web::post().to(create_message::<DbRepo>)))
+                    .service(web::resource("/msgs").route(web::get().to(get_messages::<DbRepo>)))
                     .service(web::resource("/profile/{id}").route(web::get().to(get_profile::<DbRepo>)))
                     .service(web::resource("/profile/username/{user_name}").route(web::get().to(get_profile_by_user::<DbRepo>)))
                     .service(web::resource("/profile").route(web::post().to(create_profile::<DbRepo>)))

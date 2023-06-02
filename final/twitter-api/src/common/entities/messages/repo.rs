@@ -321,7 +321,7 @@ mod private_members {
             final_message.broadcast_msg_user_id = Some(matching_broadcast.user_id);
             final_message.broadcast_msg_user_name = Some(matching_broadcast.user_name.to_string());
             final_message.broadcast_msg_full_name = Some(matching_broadcast.full_name.to_string());
-            final_message.broadcast_msg_avatar = Some(matching_broadcast.avatar.to_owned());
+            final_message.broadcast_msg_avatar = matching_broadcast.avatar.to_owned();
         }
 
         final_message

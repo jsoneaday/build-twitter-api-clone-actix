@@ -28,7 +28,7 @@ pub struct MessageWithProfileQueryResult {
     pub user_id: i64,
     pub user_name: String,
     pub full_name: String,
-    pub avatar: Vec<u8>,
+    pub avatar: Option<Vec<u8>>,
     // broadcast message fields
     pub broadcast_msg_id: Option<i64>    
 }
@@ -46,7 +46,7 @@ pub struct MessageWithFollowingAndBroadcastQueryResult {
     pub user_id: i64,
     pub user_name: String,
     pub full_name: String,
-    pub avatar: Vec<u8>,
+    pub avatar: Option<Vec<u8>>,
     // broadcast message fields
     pub broadcast_msg_id: Option<i64>,
     pub broadcast_msg_updated_at: Option<DateTime<Utc>>,
