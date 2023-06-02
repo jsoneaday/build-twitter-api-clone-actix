@@ -2,13 +2,13 @@ use twitter_clone_api::{
     common_tests::actix_fixture::{ get_app_state, PUBLIC_GROUP_TYPE },
     common::entities::{
         profiles::{ model::ProfileCreate, repo::{ InsertProfileFn } },
-        messages::repo::{ InsertMessageFn, QueryMessageFn },
+        messages::repo::{ InsertMessageFn, QueryMessageFn }, base::DbRepo,
     },
 };
 
 #[tokio::test]
 async fn test_insert_message() {
-    let app_data = get_app_state().await;
+    let app_data = get_app_state(DbRepo::init().await).await;
     let db_repo = app_data.db_repo;
 
     const BODY: &str = "Test chatter post";
@@ -32,7 +32,7 @@ async fn test_insert_message() {
 
 #[tokio::test]
 async fn test_query_message() {
-    let app_data = get_app_state().await;
+    let app_data = get_app_state(DbRepo::init().await).await;
     let db_repo = app_data.db_repo;
 
     const BODY: &str = "Test chatter post";

@@ -6,7 +6,7 @@ use actix_web::{
 use derive_more::{Display, Error};
 
 /// errors visible by the user
-#[derive(Debug, Display, Error)]
+#[derive(Debug, Display, Error, PartialEq)]
 pub enum UserError {
     #[display(fmt = "An internal error occurred. Please try again later.")]
     InternalError,

@@ -1,8 +1,8 @@
 use crate::{
-    common::{ app_state::AppState, fs::file_utils::get_avatar_buffer, entities::base::DbRepo},
+    common::{ app_state::AppState, fs::file_utils::get_avatar_buffer, entities::{base::DbRepo}},
     routes::{
-        messages::message_route::{ get_message, create_message, get_messages },
-        profiles::{ profile_route::{ create_profile, get_profile_by_user, get_profile } },
+        //messages::message_route::{ get_message, create_message, get_messages },
+        profiles::{ profile_route::{ create_profile, get_profile, get_profile_by_user } }, messages::message_route::create_message,
     },
 };
 use chrono::{ DateTime, Utc };
@@ -51,32 +51,39 @@ impl std::fmt::Display for FixtureError {
 }
 
 #[allow(unused)]
-pub async fn get_app_state() -> AppState {
+pub async fn get_app_state<T>(db_repo: T) -> AppState<T> {
     AppState {
         client: reqwest::Client::new(),
-        db_repo: DbRepo::init().await,
+        db_repo,
     }
+}
+
+pub async fn get_app_data<T>(db_repo: T) -> web::Data<AppState<T>> {
+    web::Data::new(get_app_state(db_repo).await)
 }
 
 #[allow(unused)]
 pub async fn get_app() -> impl Service<Request, Response = ServiceResponse, Error = Error> {
-    let app_data = web::Data::new(get_app_state().await);
+    // std::env::set_var("RUST_LOG", "debug");
+    // env_logger::init();
+
+    let app_data = get_app_data(DbRepo::init().await).await;
     test::init_service(
         App::new()
-            .app_data(app_data.clone())
+            .app_data(app_data.clone())            
             .service(
                 web
                     ::scope("/v1")
                     .service(
                         web
                             ::resource("/msg")
-                            .route(web::get().to(get_message))
-                            .route(web::post().to(create_message))
+                            // .route(web::get().to(get_message))
+                            .route(web::post().to(create_message::<DbRepo>))
                     )
-                    .service(web::resource("/msgs").route(web::get().to(get_messages)))
-                    .service(get_profile)
-                    .service(get_profile_by_user)
-                    .service(web::resource("/profile").route(web::post().to(create_profile)))
+                    //.service(web::resource("/msgs").route(web::get().to(get_messages)))
+                    .service(web::resource("/profile/{id}").route(web::get().to(get_profile::<DbRepo>)))
+                    .service(web::resource("/profile/username/{user_name}").route(web::get().to(get_profile_by_user::<DbRepo>)))
+                    .service(web::resource("/profile").route(web::post().to(create_profile::<DbRepo>)))
             )
     ).await
 }
@@ -127,7 +134,7 @@ pub fn get_profile_create_multipart(
     payload.extend(format!("Content-Disposition: form-data; name=\"main_url\"\r\n\r\n").as_bytes());
     let mut domain = CompanyName().fake::<String>();
     domain.retain(|str| !str.is_whitespace());
-    payload.extend(format!("http://{}.{}\r\n", domain, DomainSuffix().fake::<String>()).as_bytes());
+    payload.extend(get_fake_main_url().as_bytes());
     payload.extend(format!("--{}\r\n", boundary).as_bytes());
 
     if with_avatar == true {
@@ -143,6 +150,12 @@ pub fn get_profile_create_multipart(
     }
 
     payload
+}
+
+pub fn get_fake_main_url() -> String {
+    let mut domain = CompanyName().fake::<String>();
+    domain.retain(|str| !str.is_whitespace());
+    format!("https://{}.{}", domain, DomainSuffix().fake::<String>())
 }
 
 pub fn get_profile_avatar() -> Vec<u8> {

@@ -37,13 +37,13 @@ pub mod routes {
 }
 
 use std::env;
-use common::entities::base::DbRepo;
+use common::entities::{base::DbRepo, messages::repo::InsertMessageFn};
 use dotenv::dotenv;
 use actix_web::{ web, App, HttpServer, Responder };
-use routes::profiles::profile_route::{ get_profile_by_user, get_profile, create_profile };
+use routes::profiles::profile_route::{ create_profile, get_profile, get_profile_by_user };
 use std::error::Error;
 use crate::common::app_state::AppState;
-use crate::routes::messages::message_route::{ create_message, get_message, get_messages };
+use crate::routes::messages::message_route::{ create_message };
 
 pub async fn run() -> std::io::Result<()> {
     dotenv().ok();
@@ -55,8 +55,10 @@ pub async fn run() -> std::io::Result<()> {
     // therefore creating the app_data here outside of the HttpServer and cloning it for each App instance is safer and prevents syncing issues if data changes later
     let app_data = web::Data::new(AppState {
                     client: reqwest::Client::new(),
-                    db_repo: db_repo.clone(),
+                    db_repo,
                 });
+    std::env::set_var("RUST_LOG", "debug");
+    env_logger::init();
 
     let result = HttpServer::new(move || {
         App::new()
@@ -68,17 +70,17 @@ pub async fn run() -> std::io::Result<()> {
                     .service(
                         web
                             ::resource("/msg")
-                            .route(web::get().to(get_message))
-                            .route(web::post().to(create_message))
+                            // .route(web::get().to(get_message))
+                            .route(web::post().to(create_message::<dyn InsertMessageFn>))
                     )
-                    .service(web::resource("/msgs").route(web::get().to(get_messages)))
-                    .service(get_profile)
-                    .service(get_profile_by_user)
-                    .service(web::resource("/profile").route(web::post().to(create_profile)))
+                    //.service(web::resource("/msgs").route(web::get().to(get_messages)))
+                    .service(web::resource("/profile/{id}").route(web::get().to(get_profile::<DbRepo>)))
+                    .service(web::resource("/profile/username/{user_name}").route(web::get().to(get_profile_by_user::<DbRepo>)))
+                    .service(web::resource("/profile").route(web::post().to(create_profile::<DbRepo>)))
             )
     })
-        .bind((host, port))?
-        .run().await;
+    .bind((host, port))?
+    .run().await;
 
     result
 }

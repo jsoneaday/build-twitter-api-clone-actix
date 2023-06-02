@@ -1,7 +1,4 @@
-use super::entities::base::{DbRepo};
-
-#[derive(Clone)]
-pub struct AppState {
+pub struct AppState<T: ?Sized> {
     pub client: reqwest::Client,
-    pub db_repo: DbRepo,
+    pub db_repo: T,
 }

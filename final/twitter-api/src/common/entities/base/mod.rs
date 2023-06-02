@@ -34,7 +34,7 @@ impl DbConnGetter for DbRepo {
     }
 }
 
-async fn get_db_conn() -> Pool<Postgres> {
+pub async fn get_db_conn() -> Pool<Postgres> {
     dotenv().ok();
     let postgres_host = env::var("POSTGRES_HOST").unwrap();
     let postgres_port = env::var("POSTGRES_PORT").unwrap().parse::<u16>().unwrap();
