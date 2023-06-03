@@ -23,6 +23,10 @@ use std::{ ops::Range };
 
 pub const PUBLIC_GROUP_TYPE: i32 = 1;
 pub const CIRCLE_GROUP_TYPE: i32 = 2;
+#[allow(unused)]
+const JPEG_SIGNATURE: [u8; 2] = [0xFF, 0xD8];
+#[allow(unused)]
+const JPEG_END_SIGNATURE: [u8; 2] = [0xFF, 0xD9];
 
 #[allow(unused)]
 #[derive(Deserialize, FromRow)]
@@ -47,6 +51,23 @@ impl std::fmt::Display for FixtureError {
             Self::QueryFailed(msg) => write!(f, "{}", msg),
         }
     }
+}
+
+#[allow(unused)]
+fn is_jpeg(avatar: Vec<u8>) -> bool {
+    let mut is_valid = false;
+    if avatar.len() >= 2 && &avatar[0..2] == JPEG_SIGNATURE {
+        let end_offset = avatar.len() - 2;
+        if &avatar[end_offset..] == JPEG_END_SIGNATURE {
+            println!("The avatar data is a valid JPEG image.");
+            is_valid = true;
+        } else {
+            println!("The avatar data does not have a valid JPEG end signature.");
+        }
+    } else {
+        println!("The avatar data does not have a valid JPEG signature.");
+    }
+    is_valid
 }
 
 #[allow(unused)]
@@ -122,23 +143,21 @@ pub fn get_profile_create_multipart(
     payload.extend(format!("Content-Disposition: form-data; name=\"region\"\r\n\r\n").as_bytes());
     payload.extend(format!("{}\r\n", CountryName().fake::<String>()).as_bytes());
     payload.extend(format!("--{}\r\n", boundary).as_bytes());
-    payload.extend(format!("Content-Disposition: form-data; name=\"main_url\"\r\n\r\n").as_bytes());
-    let mut domain = CompanyName().fake::<String>();
-    domain.retain(|str| !str.is_whitespace());
+    
+    payload.extend(format!("Content-Disposition: form-data; name=\"main_url\"\r\n\r\n").as_bytes());    
     payload.extend(get_fake_main_url().as_bytes());
+    payload.extend(b"\r\n"); // warning: line breaks are very important!!! 
     payload.extend(format!("--{}\r\n", boundary).as_bytes());
 
     if with_avatar == true {
         payload.extend(
-            format!(
-                "Content-Disposition: form-data; name=\"avatar\"; filename=\"profile.jpeg\"\r\n\
-             Content-Type: image/jpeg\r\n\r\n"
-            ).as_bytes()
+            b"Content-Disposition: form-data; name=\"avatar\"; filename=\"profile.jpeg\"\r\n"
         );
+        payload.extend(b"Content-Type: image/jpeg\r\n\r\n");
         payload.extend(Bytes::from(avatar.clone()));
-        payload.extend(b"\r\n"); // warning: line breaks are very important!!!
-        payload.extend(format!("--{}--\r\n", boundary).as_bytes()); // note the extra -- at the end
+        payload.extend(b"\r\n"); // warning: line breaks are very important!!!        
     }
+    payload.extend(format!("--{}--\r\n", boundary).as_bytes()); // note the extra -- at the end of the boundary
 
     payload
 }

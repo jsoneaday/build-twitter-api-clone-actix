@@ -80,7 +80,7 @@ impl ProfileCreateMultipart {
                     region = Self::read_string(&mut field).await;
                 }
                 "main_url" => {
-                    main_url = Self::read_string(&mut field).await;
+                    main_url = Self::read_string(&mut field).await;                    
                 }
                 "avatar" => {
                     let mut field_avatar = vec![];
@@ -88,7 +88,7 @@ impl ProfileCreateMultipart {
                         let chunk = chunk.unwrap();
                         field_avatar.extend_from_slice(&chunk);
                     }
-                    avatar = Some(field_avatar);                    
+                    avatar = Some(field_avatar);
                 }
                 _ => (),
             }
@@ -113,8 +113,15 @@ impl ProfileCreateMultipart {
         let bytes = field.try_next().await;
 
         if let Ok(Some(bytes)) = bytes {
-            String::from_utf8(bytes.to_vec()).ok()
+            let result = String::from_utf8(bytes.to_vec());
+            if let Ok(val_str) = result {
+                Some(val_str)
+            } else {
+                println!("read_string error {}", result.err().unwrap().utf8_error());
+                None
+            }
         } else {
+            println!("read_string error {:?}", bytes.err().unwrap());
             None
         }
     }

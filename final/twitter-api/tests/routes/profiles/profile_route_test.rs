@@ -12,7 +12,7 @@ async fn test_route_create_profile_with_avatar() {
     let app = get_app().await;
     let avatar = get_profile_avatar();
     let boundary = Username().fake::<String>(); // use random name as boundary
-    let payload = get_profile_create_multipart(&avatar, &boundary, true);
+    let payload = get_profile_create_multipart(&avatar, &boundary, true);    
     
     let header_value_string = format!("multipart/form-data; boundary={}", boundary);
     let header_value = HeaderValue::from_str(&header_value_string);
@@ -33,4 +33,5 @@ async fn test_route_create_profile_with_avatar() {
         .unwrap();
 
     assert!(get_profile_result.id == user_id_result);
+    assert!(get_profile_result.avatar.unwrap() == avatar);
 }
