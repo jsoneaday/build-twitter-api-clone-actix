@@ -51,9 +51,6 @@ pub async fn run() -> std::io::Result<()> {
     let port = env::var("PORT").unwrap().parse().unwrap();
     let host = env::var("HOST").unwrap();
     let db_repo = DbRepo::init().await;
-    // HttpServer runs in multiple worker threads usually one for each cpu core
-    // Each server therefore gets its own instance of AppState    
-    // therefore creating the app_data here outside of the HttpServer and cloning it for each App instance is safer and prevents syncing issues if data changes later
     let app_data = web::Data::new(AppState {
                     client: reqwest::Client::new(),
                     db_repo,
