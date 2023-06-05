@@ -9,6 +9,11 @@ async fn main() -> std::io::Result<()> {
                     .route("/profile", actix_web::web::get().to(index))
                     .route("/profile", actix_web::web::post().to(insert))
             )
+            .service(
+                actix_web::web::scope("/v2")
+                    .route("/whatever", actix_web::web::get().to(index))
+                    .route("/profile", actix_web::web::post().to(insert))
+            )
     })
     .bind(("127.0.0.1", 8001))?
     .run()
