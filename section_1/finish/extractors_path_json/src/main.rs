@@ -8,7 +8,7 @@ struct FinalUser {
     full_name: String
 }
 
-#[derive(Clone, Deserialize)]
+#[derive(Deserialize)]
 struct NewUser {
     user_name: String,
     full_name: String
