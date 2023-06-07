@@ -818,6 +818,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "finish_extractors_path_json"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "chrono",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "flate2"
 version = "1.0.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2486,6 +2496,16 @@ name = "start_extractors_app_data"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+]
+
+[[package]]
+name = "start_extractors_path_json"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "chrono",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
