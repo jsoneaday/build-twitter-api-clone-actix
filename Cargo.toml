@@ -2,5 +2,7 @@
 members = [
     "final/twitter-api",
     "section_1/start/actix_arch",
-    "section_1/finish/actix_arch"
+    "section_1/finish/actix_arch",
+    "section_1/start/extractors_app_data",
+    "section_1/finish/extractors_app_data"
 ]

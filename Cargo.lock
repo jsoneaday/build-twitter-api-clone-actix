@@ -222,20 +222,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "actix_arch_finish"
-version = "0.1.0"
-dependencies = [
- "actix-web",
-]
-
-[[package]]
-name = "actix_arch_start"
-version = "0.1.0"
-dependencies = [
- "actix-web",
-]
-
-[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -815,6 +801,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e51093e27b0797c359783294ca4f0a911c270184cb10f85783b118614a1501be"
 dependencies = [
  "instant",
+]
+
+[[package]]
+name = "finish_actix_arch"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+]
+
+[[package]]
+name = "finish_extractors_app_data"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
 ]
 
 [[package]]
@@ -2472,6 +2472,20 @@ dependencies = [
  "once_cell",
  "tokio",
  "tokio-rustls",
+]
+
+[[package]]
+name = "start_actix_arch"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+]
+
+[[package]]
+name = "start_extractors_app_data"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
 ]
 
 [[package]]

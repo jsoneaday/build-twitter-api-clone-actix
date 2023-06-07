@@ -1,5 +1,5 @@
 [package]
-name = "start_actix_arch"
+name = "finish_extractors_app_data"
 version = "0.1.0"
 edition = "2021"
 
