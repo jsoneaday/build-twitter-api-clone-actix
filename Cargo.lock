@@ -822,7 +822,6 @@ name = "finish_extractors_path_json"
 version = "0.1.0"
 dependencies = [
  "actix-web",
- "chrono",
  "serde",
  "serde_json",
 ]
@@ -2503,7 +2502,6 @@ name = "start_extractors_path_json"
 version = "0.1.0"
 dependencies = [
  "actix-web",
- "chrono",
  "serde",
  "serde_json",
 ]

@@ -1,6 +1,7 @@
 use actix_web::{HttpServer, App, web::{self, Path, Json}};
 use serde::{Deserialize};
 
+#[allow(unused)]
 #[derive(Clone)]
 struct FinalUser {
     id: i64,
