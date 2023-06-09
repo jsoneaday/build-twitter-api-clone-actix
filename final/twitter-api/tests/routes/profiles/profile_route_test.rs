@@ -16,7 +16,7 @@ async fn test_route_create_profile_with_avatar() {
     
     let header_value_string = format!("multipart/form-data; boundary={}", boundary);
     let header_value = HeaderValue::from_str(&header_value_string);
-    let update_avatar_req = test::TestRequest
+    let update_avatar_req = test::TestRequest // essentially the same thing as Reqwest
         ::post()
         .append_header((header::CONTENT_TYPE, header_value.unwrap()))
         .uri("/v1/profile")
