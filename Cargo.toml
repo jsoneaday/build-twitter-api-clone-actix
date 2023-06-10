@@ -7,4 +7,6 @@ members = [
     "section_1/finish/extractors_app_data",
     "section_1/start/extractors_path_json",
     "section_1/finish/extractors_path_json",
+    "section_1/start/responders",
+    "section_1/finish/responders"
 ]
