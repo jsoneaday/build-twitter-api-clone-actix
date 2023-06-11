@@ -811,6 +811,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "finish_error"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "derive_more",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "finish_extractors_app_data"
 version = "0.1.0"
 dependencies = [
@@ -2497,6 +2507,16 @@ name = "start_actix_arch"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+]
+
+[[package]]
+name = "start_error"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "derive_more",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

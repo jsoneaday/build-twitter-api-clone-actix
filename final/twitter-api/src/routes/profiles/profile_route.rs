@@ -175,7 +175,7 @@ mod tests {
 
             let get_result = get_profile_by_user(app_data, Path::from(ProfileByUserNameQuery { user_name: Username().fake::<String>() })).await;
 
-            assert!(get_result.is_err() == true);
+            assert!(get_result.as_ref().is_err() == true);
             assert!(get_result.err().unwrap() == UserError::InternalError);
         }
     }
