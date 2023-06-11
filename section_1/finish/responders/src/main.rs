@@ -1,6 +1,3 @@
-mod either_response;
-
-use crate::either_response::get_profile_name;
 use actix_web::{HttpServer, App, web};
 
 #[actix_web::main]
