@@ -7,21 +7,24 @@ use derive_more::{Display, Error};
 pub enum MyError {
     #[display(fmt = "Internal server error")]
     InternalError,
-    #[display(fmt = "Validation failed on field {}", field)]
-    ValidationError { field: String }
+    #[display(fmt = "A field value is invalid {}", field)]
+    ValidationError { field: String },
+    #[display(fmt = "An unknown error has occured")]
+    UnknownError
 }
 
 impl ResponseError for MyError {
     fn error_response(&self) -> HttpResponse<actix_web::body::BoxBody> {
         HttpResponse::build(self.status_code())
-            .content_type(ContentType::html())
+            .content_type(ContentType::plaintext())
             .body(self.to_string())
     }
 
     fn status_code(&self) -> actix_web::http::StatusCode {
         match *self {
             MyError::InternalError => actix_web::http::StatusCode::INTERNAL_SERVER_ERROR,
-            MyError::ValidationError { .. } => actix_web::http::StatusCode::BAD_REQUEST
+            MyError::ValidationError { .. } => actix_web::http::StatusCode::BAD_REQUEST,
+            MyError::UnknownError => actix_web::http::StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }
