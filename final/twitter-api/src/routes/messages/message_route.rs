@@ -204,7 +204,10 @@ mod tests {
     mod test_mod_get_messages_failure_returns_correct_error {      
         use actix_web::web::Path;
         use chrono::{DateTime, Utc};
-        use crate::{routes::{errors::error_utils::UserError, messages::{message_route::get_messages, model::{MessageQuery, MessageByFollowingQuery}}}, common::entities::messages::{repo::QueryMessagesFn, model::MessageWithFollowingAndBroadcastQueryResult}};
+        use crate::{
+            routes::{errors::error_utils::UserError, messages::{message_route::get_messages, model::MessageByFollowingQuery}}, 
+            common::entities::messages::{repo::QueryMessagesFn, model::MessageWithFollowingAndBroadcastQueryResult}
+        };
         use super::*;
 
         struct TestRepo;
