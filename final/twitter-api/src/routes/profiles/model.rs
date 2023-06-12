@@ -19,7 +19,7 @@ pub struct ProfileByUserNameQuery {
     pub user_name: String,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ProfileShort {
     pub id: i64,

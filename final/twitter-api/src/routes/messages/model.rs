@@ -11,7 +11,7 @@ pub struct MessageQuery {
     pub id: i64
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageByFollowingQuery {
     pub follower_id: i64,
@@ -28,7 +28,7 @@ pub struct MessagePostJson {
     pub broadcasting_msg_id: Option<i64>
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageResponder {
     pub id: i64,
@@ -39,7 +39,7 @@ pub struct MessageResponder {
     pub profile: ProfileShort
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageResponders(pub Vec<MessageResponder>);
 

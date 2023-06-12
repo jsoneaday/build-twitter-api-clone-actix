@@ -67,7 +67,7 @@ pub async fn run() -> std::io::Result<()> {
                 web::scope("/v1")
                     .service(web::resource("/msg/{id}").route(web::get().to(get_message::<DbRepo>)))
                     .service(web::resource("/msg").route(web::post().to(create_message::<DbRepo>)))
-                    .service(web::resource("/msgs").route(web::get().to(get_messages::<DbRepo>)))
+                    .service(web::resource("/msgs").route(web::post().to(get_messages::<DbRepo>)))
                     .service(web::resource("/profile/{id}").route(web::get().to(get_profile::<DbRepo>)))
                     .service(web::resource("/profile/username/{user_name}").route(web::get().to(get_profile_by_user::<DbRepo>)))
                     .service(web::resource("/profile").route(web::post().to(create_profile::<DbRepo>)))

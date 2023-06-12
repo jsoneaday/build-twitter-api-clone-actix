@@ -43,14 +43,17 @@ pub async fn get_message<T: QueryMessageFn>(app_data: web::Data<AppState<T>>, pa
 }
 
 #[allow(unused)]
-pub async fn get_messages<T: QueryMessagesFn>(app_data: web::Data<AppState<T>>, path: Path<MessageByFollowingQuery>) -> Result<MessageResponders, UserError>  {
+pub async fn get_messages<T: QueryMessagesFn>(app_data: web::Data<AppState<T>>, path: Json<MessageByFollowingQuery>) -> Result<MessageResponders, UserError>  {
+    println!("start get_messages");
     let page_size = match path.page_size {
         Some(ps) => ps,
         None => 10
     };
+    
     let mut messages_result = app_data.db_repo.query_messages(
         path.follower_id, path.last_updated_at, page_size
     ).await;
+    println!("end get_messages");
     
     let mut msg_collection: Vec<MessageResponder> = vec![];
     match messages_result {
@@ -286,7 +289,7 @@ mod tests {
             let repo = TestRepo;
             let app_data = get_app_data(repo).await;
 
-            let result = get_messages(app_data, Path::from(MessageByFollowingQuery { follower_id: 0, last_updated_at: Utc::now(), page_size: None })).await;
+            let result = get_messages(app_data, Json(MessageByFollowingQuery { follower_id: 0, last_updated_at: Utc::now(), page_size: None })).await;
 
             assert!(result.is_err());
             assert!(result.err().unwrap() == UserError::InternalError);
@@ -346,7 +349,7 @@ mod tests {
             let repo = TestRepo;
             let app_data = get_app_data(repo).await;
 
-            let result = get_messages(app_data, Path::from(MessageByFollowingQuery { follower_id: 0, last_updated_at: Utc::now(), page_size: None })).await;
+            let result = get_messages(app_data, Json(MessageByFollowingQuery { follower_id: 0, last_updated_at: Utc::now(), page_size: None })).await;
 
             assert!(!result.is_err());
             assert!(result.ok().unwrap().0[0].id == ID);
