@@ -7,7 +7,7 @@ use crate::{common::{
         },
     },
 }, routes::{errors::error_utils::UserError, output_id::OutputId}};
-use actix_web::{ web, web::{ Path, Json }, Responder };
+use actix_web::{ web, web::Path };
 use super::model::{
     ProfileQuery,
     ProfileByUserNameQuery,
@@ -44,25 +44,25 @@ pub async fn create_profile<T: InsertProfileFn>(
 pub async fn get_profile<T: QueryProfileFn>(
     app_data: web::Data<AppState<T>>,
     path: Path<ProfileQuery>
-) -> Result<impl Responder, UserError> {
+) -> Result<Option<ProfileResponder>, UserError> {
     let result = app_data.db_repo.query_profile(path.id).await;
 
     match result {
-        Ok(profile) => { Ok(Json(convert(profile))) }
-        Err(e) => Err(e.into()),
+        Ok(profile) => Ok(convert(profile)),
+        Err(e) => Err(e.into())
     }
 }
 
 pub async fn get_profile_by_user<T: QueryProfileByUserFn>(
     app_data: web::Data<AppState<T>>,
     path: Path<ProfileByUserNameQuery>
-) -> Result<impl Responder, UserError> {
+) -> Result<Option<ProfileResponder>, UserError> {
     let result = app_data.db_repo.query_profile_by_user(
         path.user_name.to_owned()
     ).await;
 
     match result {
-        Ok(profile) => Ok(Json(convert(profile))),
+        Ok(profile) => Ok(convert(profile)),
         Err(e) => Err(e.into()),
     }
 }
@@ -198,6 +198,43 @@ mod tests {
         }
     }
 
+    mod test_mod_get_profile_and_check_id {    
+        use chrono::Utc;
+        use crate::common_tests::actix_fixture::get_fake_message_body;
+        use super::*;
+        
+        const ID: i64 = 22;
+        #[derive(Clone)]
+        struct MockDbRepo;
+
+        #[async_trait]
+        impl QueryProfileFn for MockDbRepo {
+            async fn query_profile(&self, _: i64) -> Result<Option<ProfileQueryResult>, sqlx::Error> {
+                Ok(Some(ProfileQueryResult {
+                    id: ID,
+                    created_at: Utc::now(),
+                    updated_at: Utc::now(),
+                    user_name: Username().fake(),
+                    full_name: format!("{} {} ", FirstName().fake::<String>(), LastName().fake::<String>()),
+                    description: get_fake_message_body(None),
+                    region: None,
+                    main_url: None,
+                    avatar: None
+                }))
+            }
+        }
+
+        #[tokio::test]
+        async fn test_get_profile_and_check_id() {
+            let app_data = get_app_data(MockDbRepo).await;
+
+            let get_result = get_profile(app_data, Path::from(ProfileQuery { id: 0 })).await;
+
+            assert!(!get_result.is_err());
+            assert!(get_result.ok().unwrap().unwrap().id == ID);
+        }
+    }
+
     mod test_mod_get_profile_by_user_failure_returns_correct_error {    
         use super::*;
         
@@ -219,6 +256,43 @@ mod tests {
 
             assert!(get_result.as_ref().is_err() == true);
             assert!(get_result.err().unwrap() == UserError::InternalError);
+        }
+    }
+
+    mod test_mod_get_profile_by_user_and_check_id {    
+        use chrono::Utc;
+        use crate::common_tests::actix_fixture::get_fake_message_body;
+        use super::*;
+        
+        const ID: i64 = 22;
+        #[derive(Clone)]
+        struct MockDbRepo;
+
+        #[async_trait]
+        impl QueryProfileByUserFn for MockDbRepo {
+            async fn query_profile_by_user(&self, _: String) -> Result<Option<ProfileQueryResult>, sqlx::Error> {
+                Ok(Some(ProfileQueryResult {
+                    id: ID,
+                    created_at: Utc::now(),
+                    updated_at: Utc::now(),
+                    user_name: Username().fake(),
+                    full_name: format!("{} {} ", FirstName().fake::<String>(), LastName().fake::<String>()),
+                    description: get_fake_message_body(None),
+                    region: None,
+                    main_url: None,
+                    avatar: None
+                }))
+            }
+        }
+
+        #[tokio::test]
+        async fn test_get_profile_by_user_and_check_id() {
+            let app_data = get_app_data(MockDbRepo).await;
+
+            let get_result = get_profile_by_user(app_data, Path::from(ProfileByUserNameQuery { user_name: Username().fake() })).await;
+
+            assert!(!get_result.is_err());
+            assert!(get_result.ok().unwrap().unwrap().id == ID);
         }
     }
 }

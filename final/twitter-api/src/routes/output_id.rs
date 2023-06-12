@@ -1,9 +1,9 @@
 use actix_http::body::BoxBody;
 use actix_web::http::header::ContentType;
 use actix_web::{Responder, HttpResponse, HttpRequest };
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct OutputId {
     pub id: i64
 }

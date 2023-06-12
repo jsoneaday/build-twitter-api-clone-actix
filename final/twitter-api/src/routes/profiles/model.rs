@@ -1,6 +1,8 @@
 use std::{ fmt, pin::Pin };
+use actix_http::body::BoxBody;
 use actix_multipart::{ Multipart, Field };
-use actix_web::{ FromRequest, HttpRequest};
+use actix_web::http::header::ContentType;
+use actix_web::{ FromRequest, HttpRequest, Responder, HttpResponse};
 use actix_web::dev::Payload;
 use chrono::{ Utc, DateTime };
 use futures::{ Future, TryStreamExt, StreamExt };
@@ -168,4 +170,25 @@ pub struct ProfileResponder {
     pub region: Option<String>,
     pub main_url: Option<String>,
     pub avatar: Option<Vec<u8>>,
+}
+
+impl Responder for ProfileResponder {
+    type Body = BoxBody;
+
+    fn respond_to(self, _: &HttpRequest) -> HttpResponse<Self::Body> {
+        let body_result = serde_json::to_string(&self);
+
+        match body_result {
+            Ok(body) => {
+                HttpResponse::Ok()
+                .content_type(ContentType::json())
+                .body(body)
+            },
+            Err(_) => {
+                HttpResponse::InternalServerError()
+                    .content_type(ContentType::json())
+                    .body("Failed to serialize ProfileResponder.")
+            },
+        }
+    }
 }
