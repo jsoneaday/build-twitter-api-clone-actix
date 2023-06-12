@@ -3,7 +3,7 @@ name = "twitter-clone-api"
 version = "0.1.0"
 edition = "2021"
 authors = ["David Choi"]
-description = "Simple api server for Chatter"
+description = "Twitter Clone"
 
 [lib]
 path = "src/lib.rs"
