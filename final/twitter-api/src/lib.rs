@@ -23,6 +23,7 @@ pub mod common_tests {
     pub mod actix_fixture;
 }
 pub mod routes {
+    pub mod output_id;
     pub mod messages {
         pub mod model;
         pub mod message_route;

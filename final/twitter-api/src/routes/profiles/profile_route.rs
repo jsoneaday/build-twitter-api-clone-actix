@@ -6,7 +6,7 @@ use crate::{common::{
             repo::{ InsertProfileFn, QueryProfileFn, QueryProfileByUserFn },
         },
     },
-}, routes::errors::error_utils::UserError};
+}, routes::{errors::error_utils::UserError, output_id::OutputId}};
 use actix_web::{ web, web::{ Path, Json }, Responder };
 use super::model::{
     ProfileQuery,
@@ -19,7 +19,7 @@ use super::model::{
 pub async fn create_profile<T: InsertProfileFn>(
     app_data: web::Data<AppState<T>>,
     form: ProfileCreateMultipart
-) -> Result<impl Responder, UserError> {
+) -> Result<OutputId, UserError> {
     let result = app_data.db_repo.insert_profile(ProfileCreate {
         user_name: form.user_name.to_owned(),
         full_name: form.full_name.to_owned(),
@@ -36,7 +36,7 @@ pub async fn create_profile<T: InsertProfileFn>(
     }).await;
 
     match result {
-        Ok(id) => Ok(Json(id)),
+        Ok(id) => Ok(OutputId { id }),
         Err(e) => Err(e.into()),
     }
 }
@@ -87,7 +87,14 @@ fn convert(profile: Option<ProfileQueryResult>) -> Option<ProfileResponder> {
 
 #[cfg(test)]
 mod tests {
-    use fake::{faker::{internet::en::Username, name::en::{LastName, FirstName}, lorem::en::Sentence, address::en::CountryName}, Fake};
+    use fake::{
+        faker::{
+            internet::en::Username, 
+            name::en::{LastName, FirstName}, 
+            lorem::en::Sentence, address::en::CountryName
+        }, 
+        Fake
+    };
     use crate::{
         common::{
             entities::{profiles::{repo::InsertProfileFn, model::ProfileCreate}}
@@ -129,6 +136,41 @@ mod tests {
             
             assert!(result.is_err() == true);
             assert!(result.err().unwrap() == UserError::InternalError);
+        }
+    }
+
+    mod test_mod_create_profile_and_check_id {    
+        use super::*;
+
+        const ID: i64 = 22;
+
+        #[derive(Clone)]
+        struct MockDbRepo;
+
+        #[async_trait]
+        impl InsertProfileFn for MockDbRepo {
+            async fn insert_profile(&self, _: ProfileCreate) -> Result<i64, sqlx::Error> {
+                Ok(ID)
+            }
+        }
+
+        #[tokio::test]
+        async fn test_create_profile_and_check_id() {          
+            let avatar = get_profile_avatar();
+
+            let app_data = get_app_data(MockDbRepo).await;
+
+            let result = create_profile(app_data, ProfileCreateMultipart { 
+                user_name: Username().fake::<String>(), 
+                full_name: format!("{} {}", FirstName().fake::<String>(), LastName().fake::<String>()),
+                description: Sentence(1..2).fake::<String>(), 
+                region: Some(CountryName().fake::<String>()), 
+                main_url: Some(get_fake_main_url()),
+                avatar: Some(avatar), 
+            }).await;
+            
+            assert!(!result.is_err());
+            assert!(result.ok().unwrap().id == ID);
         }
     }
 

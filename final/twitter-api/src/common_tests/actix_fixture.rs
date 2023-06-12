@@ -100,7 +100,7 @@ pub async fn get_app() -> impl Service<Request, Response = ServiceResponse, Erro
     ).await
 }
 
-pub fn create_random_msg_body(prefix: Option<String>) -> String {
+pub fn get_fake_message_body(prefix: Option<String>) -> String {
     let mut body: String = match prefix {
         Some(pref) => pref,
         None => "".to_string(),

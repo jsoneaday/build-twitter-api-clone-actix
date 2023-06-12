@@ -199,7 +199,7 @@ mod tests {
     use crate::{
         common_tests::actix_fixture::{
             PUBLIC_GROUP_TYPE,
-            create_random_msg_body,
+            get_fake_message_body,
             FixtureError,
             MessageResponse,
         },
@@ -319,7 +319,7 @@ mod tests {
                 let following_message_id = db_repo
                     .insert_message(
                         following_profile_id,
-                        &create_random_msg_body(Some(local_prefix.clone().to_string())),
+                        &get_fake_message_body(Some(local_prefix.clone().to_string())),
                         PUBLIC_GROUP_TYPE,
                         None
                     ).await
@@ -356,7 +356,7 @@ mod tests {
                         .unwrap();
                     _ = db_repo.insert_message(
                         *following_pm.0,
-                        &create_random_msg_body(Some(local_prefix.clone().to_string())),
+                        &get_fake_message_body(Some(local_prefix.clone().to_string())),
                         PUBLIC_GROUP_TYPE,
                         Some(*selected_message_id)
                     ).await;
@@ -378,7 +378,7 @@ mod tests {
                         .unwrap();
                     _ = db_repo.insert_response_message(
                         *following_pm.0,
-                        &create_random_msg_body(Some(local_prefix.clone().to_string())),
+                        &get_fake_message_body(Some(local_prefix.clone().to_string())),
                         PUBLIC_GROUP_TYPE,
                         *selected_message_id
                     ).await;
