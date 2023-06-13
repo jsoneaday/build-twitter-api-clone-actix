@@ -260,8 +260,7 @@ mod tests {
         }
     }
 
-    mod test_mod_get_messages_failure_returns_correct_error {      
-        use actix_web::web::Path;
+    mod test_mod_get_messages_failure_returns_correct_error {    
         use chrono::{DateTime, Utc};
         use crate::{
             routes::{errors::error_utils::UserError, messages::{message_route::get_messages, model::MessageByFollowingQuery}}, 
@@ -296,8 +295,7 @@ mod tests {
         }
     }
 
-    mod test_mod_get_messages_and_check_id {      
-        use actix_web::web::Path;
+    mod test_mod_get_messages_and_check_id {  
         use chrono::{Utc, DateTime};
         use fake::faker::{internet::en::Username, name::en::{FirstName, LastName}};
         use fake::Fake;

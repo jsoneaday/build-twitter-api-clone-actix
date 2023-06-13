@@ -837,6 +837,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "finish_handlers"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "derive_more",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "finish_responders"
 version = "0.1.0"
 dependencies = [
@@ -2531,6 +2541,16 @@ name = "start_extractors_path_json"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "start_handlers"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "derive_more",
  "serde",
  "serde_json",
 ]
