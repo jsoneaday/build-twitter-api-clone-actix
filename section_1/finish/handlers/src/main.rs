@@ -1,4 +1,4 @@
-use actix_web::{HttpServer, App, web::{self, Redirect}, web::Path, Responder, web::Data, http::{StatusCode, header::ContentType}, ResponseError, Either, body::BoxBody, HttpResponse};
+use actix_web::{HttpServer, App, web::{self, Redirect}, web::Path, Responder, web::Data, http::{StatusCode, header::ContentType}, ResponseError, Either, body::BoxBody, HttpResponse, HttpRequest};
 use serde::Serialize;
 use std::sync::RwLock;
 use derive_more::{ Display, Error };
@@ -75,6 +75,12 @@ enum MyError {
 }
 
 impl ResponseError for MyError {
+    fn error_response(&self) -> HttpResponse<BoxBody> {
+        HttpResponse::build(self.status_code())
+            .content_type(ContentType::json())
+            .body(self.to_string())
+    }
+
     fn status_code(&self) -> StatusCode {
         match *self {
             MyError::Internal => StatusCode::INTERNAL_SERVER_ERROR,
@@ -83,7 +89,7 @@ impl ResponseError for MyError {
     }
 }
 
-async fn get_user(app_data: Data<AppState>, path: Path<String>) -> Either<Result<impl Responder, MyError>, Result<User, MyError>> {   
+async fn get_user(req: HttpRequest, app_data: Data<AppState>, path: Path<String>) -> Either<Result<impl Responder, MyError>, Result<User, MyError>> {   
     println!("start get_user");
     let user_name = path.into_inner();
 
@@ -93,9 +99,12 @@ async fn get_user(app_data: Data<AppState>, path: Path<String>) -> Either<Result
         .find(|usr| usr.user_name == user_name);
 
     match data {
-        Some(usr) if usr.id != 3 => Either::Left(Ok(Redirect::new("/", "../na"))),
+        Some(usr) if usr.id != 3 => {
+            println!("current path {}", req.path());
+            Either::Left(Ok(Redirect::new("/", "../na")))
+        },
         Some(usr) => Either::Right(Ok(usr.to_owned())),
-        None => Either::Right(Err(MyError::Internal))
+        None => Either::Right(Err(MyError::Unknown))
     }
 }
 
