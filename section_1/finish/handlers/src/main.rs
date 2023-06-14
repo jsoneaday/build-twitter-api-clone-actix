@@ -89,8 +89,7 @@ impl ResponseError for MyError {
     }
 }
 
-async fn get_user(req: HttpRequest, app_data: Data<AppState>, path: Path<String>) -> Either<Result<impl Responder, MyError>, Result<User, MyError>> {   
-    println!("start get_user");
+async fn get_user(req: HttpRequest, app_data: Data<AppState>, path: Path<String>) -> Either<Result<impl Responder, MyError>, Result<User, MyError>> { 
     let user_name = path.into_inner();
 
     let users = app_data.users.read().unwrap();
@@ -109,6 +108,5 @@ async fn get_user(req: HttpRequest, app_data: Data<AppState>, path: Path<String>
 }
 
 async fn failure_msg() -> &'static str {
-    println!("start failure_msg");
     "Something went wrong"
 }

@@ -2856,6 +2856,7 @@ dependencies = [
  "futures",
  "futures-util",
  "lazy_static",
+ "log 0.4.18",
  "mockall",
  "multipart",
  "rand 0.8.5",
