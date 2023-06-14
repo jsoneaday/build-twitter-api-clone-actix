@@ -8,6 +8,7 @@ use crate::{common::{
     },
 }, routes::{errors::error_utils::UserError, output_id::OutputId}};
 use actix_web::{ web, web::Path };
+use log::info;
 use super::model::{
     ProfileQuery,
     ProfileByUserNameQuery,
@@ -45,6 +46,7 @@ pub async fn get_profile<T: QueryProfileFn>(
     app_data: web::Data<AppState<T>>,
     path: Path<ProfileQuery>
 ) -> Result<Option<ProfileResponder>, UserError> {
+    info!("start get_profile");
     let result = app_data.db_repo.query_profile(path.id).await;
 
     match result {

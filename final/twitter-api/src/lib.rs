@@ -40,7 +40,7 @@ pub mod routes {
 use std::env;
 use common::entities::{base::DbRepo};
 use dotenv::dotenv;
-use actix_web::{ web, App, HttpServer, Responder };
+use actix_web::{ web, App, HttpServer, Responder, middleware::Logger };
 use routes::messages::message_route::{get_message, get_messages};
 use routes::profiles::profile_route::{ create_profile, get_profile, get_profile_by_user };
 use std::error::Error;
@@ -56,11 +56,11 @@ pub async fn run() -> std::io::Result<()> {
                     client: reqwest::Client::new(),
                     db_repo,
                 });
-    std::env::set_var("RUST_LOG", "debug");
-    env_logger::init();
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     let result = HttpServer::new(move || {
         App::new()
+            .wrap(Logger::default())
             .app_data(app_data.clone())
             .route("/", web::get().to(get_root))
             .service(
