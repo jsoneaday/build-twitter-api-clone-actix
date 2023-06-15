@@ -847,6 +847,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "finish_middleware"
+version = "0.1.0"
+dependencies = [
+ "actix-http",
+ "actix-web",
+ "derive_more",
+ "futures",
+ "futures-util",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "finish_responders"
 version = "0.1.0"
 dependencies = [
@@ -2547,6 +2560,16 @@ dependencies = [
 
 [[package]]
 name = "start_handlers"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "derive_more",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "start_middleware"
 version = "0.1.0"
 dependencies = [
  "actix-web",

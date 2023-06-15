@@ -12,5 +12,7 @@ members = [
     "section_1/start/error",
     "section_1/finish/error",
     "section_1/start/handlers",
-    "section_1/finish/handlers"
+    "section_1/finish/handlers",
+    "section_1/start/middleware",
+    "section_1/finish/middleware",
 ]
