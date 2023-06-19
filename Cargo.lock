@@ -853,8 +853,10 @@ dependencies = [
  "actix-http",
  "actix-web",
  "derive_more",
+ "env_logger",
  "futures",
  "futures-util",
+ "log 0.4.18",
  "serde",
  "serde_json",
 ]
