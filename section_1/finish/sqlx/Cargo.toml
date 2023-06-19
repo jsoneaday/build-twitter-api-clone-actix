@@ -1,0 +1,16 @@
+[package]
+name = "finish_sqlx"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4.3.1"
+chrono = { version = "0.4.24", features = ["serde"] }
+derive_more = "0.99.17"
+serde = { version = "1.0.157", features = ["derive"] }
+serde_json = "1.0.94"
+sqlx = { version = "0.6.3", features = ["postgres", "runtime-tokio-rustls", "chrono"]}
+tokio = { version = "1.26.0", features = ["full"] }
+tokio-stream = "0.1.14"

@@ -15,4 +15,5 @@ members = [
     "section_1/finish/handlers",
     "section_1/start/middleware",
     "section_1/finish/middleware",
+    "section_1/finish/sqlx"
 ]
