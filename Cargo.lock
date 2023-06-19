@@ -2605,6 +2605,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "start_sqlx"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "chrono",
+ "derive_more",
+ "fake",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "tokio-stream",
+]
+
+[[package]]
 name = "stringprep"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

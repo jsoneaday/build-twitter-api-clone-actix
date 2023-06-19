@@ -1,5 +1,5 @@
 [package]
-name = "start_sqlx"
+name = "finish_sqlx"
 version = "0.1.0"
 edition = "2021"
 
