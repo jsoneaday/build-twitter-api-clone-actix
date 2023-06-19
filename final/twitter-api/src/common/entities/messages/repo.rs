@@ -20,7 +20,7 @@ mod private_members {
         group_type: i32,
         broadcasting_msg_id: Option<i64>
     ) -> Result<i64, sqlx::Error> {
-        let tx = conn.begin().await.unwrap();
+        let mut tx = conn.begin().await.unwrap();
 
         let insert_msg_result = sqlx
             ::query_as::<_, EntityId>(
@@ -29,7 +29,7 @@ mod private_members {
             .bind(user_id)
             .bind(body)
             .bind(group_type)
-            .fetch_one(conn).await;
+            .fetch_one(&mut tx).await;
 
         let message_id_result = match insert_msg_result {
             Ok(r) => Ok(r.id),
@@ -50,7 +50,7 @@ mod private_members {
                 )
                 .bind(message_id_result.as_ref().unwrap())
                 .bind(bm_id)
-                .fetch_one(conn).await;
+                .fetch_one(&mut tx).await;
 
             if let Err(e) = message_braodcast_result {
                 _ = tx.rollback().await;

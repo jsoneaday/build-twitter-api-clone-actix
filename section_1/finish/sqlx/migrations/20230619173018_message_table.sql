@@ -9,3 +9,6 @@ create table message (
 
     constraint fk_profile foreign key(user_id) references profile(id)
 );
+
+insert into message (user_id, body, likes) values (1, 'Hello Guys!', 5);
+insert into message (user_id, body, likes) values (2, 'Hello Girls!', 2);
