@@ -11,15 +11,15 @@ async fn main() -> std::io::Result<()> {
 
     let mut tx = conn.begin().await.unwrap();
 
-    let _insert_result = sqlx::query_as::<_, EntityId>("insert into profile (user_name, full_name) values ($1, $2) returning id")
+    let insert_result = sqlx::query_as::<_, EntityId>("insert into profile (user_name, full_name) values ($1, $2) returning id")
         .bind(Username().fake::<String>())
         .bind(format!("{} {}", FirstName().fake::<String>(), LastName().fake::<String>()))
         .fetch_one(&mut tx)
         .await;
 
     let query_result = sqlx::query_as::<_, Profile>("select * from profile where id = $1")
-        .bind(243245645)
-        //.bind(insert_result.unwrap().id)
+        //.bind(243245645)
+        .bind(insert_result.unwrap().id)
         .fetch_one(&mut tx)
         .await;
 
