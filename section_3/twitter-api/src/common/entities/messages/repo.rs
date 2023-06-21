@@ -5,7 +5,6 @@ use super::model::MessageWithFollowingAndBroadcastQueryResult;
 use async_trait::async_trait;
 use chrono::{ DateTime, Utc };
 
-// why bother with this?
 // 1. we create a single logical container where multiple related members can exist
 // 2. we create repeatable structure to our code
 // 3. we can hide some members even from our parent module
@@ -18,7 +17,7 @@ mod private_members {
         user_id: i64,
         body: &str,
         group_type: i32,
-        broadcasting_msg_id: Option<i64>
+        main_msg_id: Option<i64>
     ) -> Result<i64, sqlx::Error> {
         let mut tx = conn.begin().await.unwrap();
 
@@ -38,23 +37,23 @@ mod private_members {
                 Err(e)
             }
         };
-        if let Err(e) = message_id_result {
+        if message_id_result.is_err() {
             _ = tx.rollback().await;
-            return Err(e);
+            return message_id_result;
         }
 
-        if let Some(bm_id) = broadcasting_msg_id {
-            let message_braodcast_result = sqlx
+        if let Some(bm_id) = main_msg_id {
+            let message_broadcast_result = sqlx
                 ::query_as::<_, EntityId>(
                     "insert into message_broadcast (main_msg_id, broadcasting_msg_id) values ($1, $2) returning id"
                 )
-                .bind(message_id_result.as_ref().unwrap())
                 .bind(bm_id)
+                .bind(message_id_result.as_ref().unwrap())                
                 .fetch_one(&mut tx).await;
 
-            if let Err(e) = message_braodcast_result {
+            if message_broadcast_result.is_err() {
                 _ = tx.rollback().await;
-                return Err(e);
+                return Err(message_broadcast_result.err().unwrap());
             }
         }
 
@@ -70,7 +69,7 @@ mod private_members {
         group_type: i32,
         original_msg_id: i64
     ) -> Result<i64, sqlx::Error> {
-        let tx = conn.begin().await.unwrap();
+        let mut tx = conn.begin().await.unwrap();
 
         let insert_result = sqlx
             ::query_as::<_, EntityId>(
@@ -79,7 +78,7 @@ mod private_members {
             .bind(user_id)
             .bind(body)
             .bind(group_type)
-            .fetch_one(conn).await;
+            .fetch_one(&mut tx).await;
         let msg_id_result = match insert_result {
             Ok(r) => Ok(r.id),
             Err(e) => {
@@ -88,6 +87,7 @@ mod private_members {
             }
         };
         if msg_id_result.is_err() {
+            _ = tx.rollback().await;
             return msg_id_result;
         }
         let msg_id: i64 = msg_id_result.unwrap();
@@ -98,13 +98,14 @@ mod private_members {
             )
             .bind(original_msg_id)
             .bind(msg_id)
-            .fetch_one(conn).await;
+            .fetch_one(&mut tx).await;
 
         let msg_response_id_result = match insert_msg_response_result {
             Ok(row) => Ok(row.id),
             Err(e) => Err(e),
         };
         if msg_response_id_result.is_err() {
+            _ = tx.rollback().await;
             return msg_response_id_result;
         }
 
