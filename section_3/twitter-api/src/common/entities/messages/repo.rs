@@ -17,7 +17,7 @@ mod private_members {
         user_id: i64,
         body: &str,
         group_type: i32,
-        main_msg_id: Option<i64>
+        broadcasting_msg_id: Option<i64>
     ) -> Result<i64, sqlx::Error> {
         let mut tx = conn.begin().await.unwrap();
 
@@ -42,13 +42,13 @@ mod private_members {
             return message_id_result;
         }
 
-        if let Some(bm_id) = main_msg_id {
+        if let Some(bm_id) = broadcasting_msg_id {
             let message_broadcast_result = sqlx
                 ::query_as::<_, EntityId>(
                     "insert into message_broadcast (main_msg_id, broadcasting_msg_id) values ($1, $2) returning id"
                 )
+                .bind(message_id_result.as_ref().unwrap())
                 .bind(bm_id)
-                .bind(message_id_result.as_ref().unwrap())                
                 .fetch_one(&mut tx).await;
 
             if message_broadcast_result.is_err() {
