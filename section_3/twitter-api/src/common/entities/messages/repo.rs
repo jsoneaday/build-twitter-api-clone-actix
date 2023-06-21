@@ -38,7 +38,6 @@ mod private_members {
             }
         };
         if message_id_result.is_err() {
-            _ = tx.rollback().await;
             return message_id_result;
         }
 
@@ -87,7 +86,6 @@ mod private_members {
             }
         };
         if msg_id_result.is_err() {
-            _ = tx.rollback().await;
             return msg_id_result;
         }
         let msg_id: i64 = msg_id_result.unwrap();
