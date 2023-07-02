@@ -2,4 +2,5 @@
 
 # Author David Choi
 
-https://www.udemy.com/course/draft/5358322/?referralCode=58A7FC4C347D0BD4BD44
+Course link https://www.udemy.com/course/draft/5358322/?referralCode=58A7FC4C347D0BD4BD44
+Instructor Profile https://www.udemy.com/user/54ae9bd2352bb/
